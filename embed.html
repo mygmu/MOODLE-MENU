@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GMU College Menu</title>
 <base target="_top">
+<script src="assets/particles.js" defer></script>
 <style>
 /* =========================================================
    GMU LMS - College menu  (v2, full redesign)
@@ -136,6 +137,44 @@
   pointer-events: none;
   opacity: .22;
   z-index: 1;
+}
+
+/* =========================================================
+   NODE NETWORK
+   Sparse linked nodes drawn to a canvas by assets/particles.js, one
+   per tile, nudged aside by the cursor. This replaced three layers of
+   CSS dot-fields: those were a drifting dust cloud that could not react
+   to the pointer, and were too busy.
+
+   The container is zero-size and the canvas inside it is absolutely
+   positioned, so nothing here participates in layout - the iframe
+   height stays a fixed ratio of its width.
+
+   pointer-events:none matters: each tile is a link, and the canvas
+   covers it completely. The script tracks the pointer on window.
+
+   Without JavaScript this stays empty and the card keeps its
+   gradient, mesh, arc, icon and photo.
+   ========================================================= */
+.gmu-tile__particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.gmu-tile__particles canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: .85;
+  transition: opacity .35s ease;
+}
+
+@media (hover: hover) {
+  .gmu-tile:hover .gmu-tile__particles canvas { opacity: 1; }
 }
 
 /* ---------------- content ---------------- */
@@ -296,6 +335,8 @@
   .gmu-tile { transform: none !important; }
   .gmu-tile__photo { transform: translateY(-50%) !important; }
   .gmu-tile::after { display: none; }
+  /* particles.js also checks prefers-reduced-motion and draws a
+     single static frame instead of animating. */
 }
 
 /* Overrides that make total height exactly proportional to width.
@@ -335,6 +376,7 @@ html, body { margin:0; padding:0; background:transparent; }
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/01-college-of-medicine.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -349,6 +391,7 @@ html, body { margin:0; padding:0; background:transparent; }
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/02-college-of-pharmacy.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -363,6 +406,7 @@ html, body { margin:0; padding:0; background:transparent; }
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/03-college-of-dentistry.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -377,6 +421,7 @@ html, body { margin:0; padding:0; background:transparent; }
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/04-college-of-health-sciences.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -391,6 +436,7 @@ html, body { margin:0; padding:0; background:transparent; }
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/05-management-and-ai.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -405,6 +451,7 @@ html, body { margin:0; padding:0; background:transparent; }
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/06-college-of-nursing.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -419,6 +466,7 @@ html, body { margin:0; padding:0; background:transparent; }
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/07-veterinary-medicine.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -433,6 +481,7 @@ html, body { margin:0; padding:0; background:transparent; }
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/08-general-education-department.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -447,6 +496,7 @@ html, body { margin:0; padding:0; background:transparent; }
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/09-foundation-foreign-language.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">

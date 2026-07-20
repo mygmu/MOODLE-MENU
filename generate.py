@@ -76,6 +76,7 @@ def tiles(prefix):
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="{prefix}assets/icons/{stem}.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="{prefix}assets/shield.png" alt="">
@@ -164,6 +165,7 @@ for limit, aspect in BANDS:
   .gmu-tile {{ aspect-ratio: {aspect:.6f}; }}
 }}"""
 
+prefix_js = ""
 embed = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -171,6 +173,7 @@ embed = f"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GMU College Menu</title>
 <base target="_top">
+<script src="{prefix_js}assets/particles.js" defer></script>
 <style>
 {css}{embed_css}
 </style>
@@ -183,6 +186,14 @@ open("embed.html", "w", encoding="utf-8").write(embed)
 
 # --- moodle-iframe-snippet.html: the auto-fitting wrapper. ---
 default_ratio = height_over_width(BANDS[-1][1])
+# The inline fallback must be the TALLEST ratio, not the desktop one. Inline
+# style beats any selector without !important, so a desktop-ratio inline value
+# silently overrode the phone bands and cut 38.9% off the menu on phones. The
+# stylesheet rules below now carry !important so they win when present; if the
+# purifier strips them, the tallest ratio leaves a gap on desktop rather than
+# clipping content on mobile. Failing tall is recoverable, failing short hides
+# half the menu.
+safest_ratio = max(height_over_width(a) for _, a in BANDS)
 rows = "\n".join(
     f"     {('<=' + str(l) + 'px').rjust(8)}   tile {a:.3f}:1   ->  frame 1 : {height_over_width(a):.5f}"
     for l, a in BANDS[:-1]
@@ -204,13 +215,13 @@ def _bounds():
 
 cq = "\n".join(
     f"""  @container {cond} {{
-    .gmu-frame__box {{ aspect-ratio: 1 / {r:.5f}; }}
+    .gmu-frame__box {{ aspect-ratio: 1 / {r:.5f} !important; }}
   }}"""
     for cond, r in _bounds()
 )
 fb = "\n".join(
     f"""    @media {cond} {{
-      .gmu-frame__box {{ aspect-ratio: 1 / {r:.5f}; }}
+      .gmu-frame__box {{ aspect-ratio: 1 / {r:.5f} !important; }}
     }}"""
     for cond, r in _bounds()
 )
@@ -237,6 +248,12 @@ iframe_snippet = f"""<!-- ======================================================
      a gap or clip a tile. The @supports fallback below only runs on
      browsers too old for container queries.
 
+     The sizing is ALSO written as inline style attributes. Moodle's
+     purifier keeps style="" but may drop <style> blocks; without the
+     inline copy the iframe would collapse to the browser default of
+     150px. Inline carries the desktop ratio, the <style> block adds
+     the phone and tablet bands on top.
+
      If you change GAP_PCT or the crop ratios, re-run generate.py -
      these numbers are derived, not typed.
      ========================================================= -->
@@ -248,7 +265,7 @@ iframe_snippet = f"""<!-- ======================================================
   margin: 0 auto;
 }}
 .gmu-frame__box {{
-  aspect-ratio: 1 / {default_ratio:.5f};
+  aspect-ratio: 1 / {default_ratio:.5f} !important;
   width: 100%;
 }}
 .gmu-frame__box iframe {{
@@ -265,12 +282,13 @@ iframe_snippet = f"""<!-- ======================================================
 }}
 </style>
 
-<div class="gmu-frame">
-  <div class="gmu-frame__box">
+<div class="gmu-frame" style="max-width:1200px;margin:0 auto;container-type:inline-size;">
+  <div class="gmu-frame__box" style="width:100%;aspect-ratio:1/{safest_ratio:.5f};">
     <iframe src="{SITE}/embed.html"
             title="Gulf Medical University - college menu"
             loading="lazy"
-            scrolling="no"></iframe>
+            scrolling="no"
+            style="width:100%;height:100%;border:0;display:block;"></iframe>
   </div>
 </div>
 """
@@ -283,6 +301,7 @@ page = f"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GMU LMS - College Menu</title>
+<script src="assets/particles.js" defer></script>
 <style>
 body {{ margin:0; font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
         background:#f4f5f7; color:#1c2230; }}

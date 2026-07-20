@@ -22,6 +22,12 @@
      a gap or clip a tile. The @supports fallback below only runs on
      browsers too old for container queries.
 
+     The sizing is ALSO written as inline style attributes. Moodle's
+     purifier keeps style="" but may drop <style> blocks; without the
+     inline copy the iframe would collapse to the browser default of
+     150px. Inline carries the desktop ratio, the <style> block adds
+     the phone and tablet bands on top.
+
      If you change GAP_PCT or the crop ratios, re-run generate.py -
      these numbers are derived, not typed.
      ========================================================= -->
@@ -33,7 +39,7 @@
   margin: 0 auto;
 }
 .gmu-frame__box {
-  aspect-ratio: 1 / 2.35400;
+  aspect-ratio: 1 / 2.35400 !important;
   width: 100%;
 }
 .gmu-frame__box iframe {
@@ -44,27 +50,28 @@
 }
 
   @container (max-width: 430px) {
-    .gmu-frame__box { aspect-ratio: 1 / 3.85400; }
+    .gmu-frame__box { aspect-ratio: 1 / 3.85400 !important; }
   }
   @container (min-width: 431px) and (max-width: 780px) {
-    .gmu-frame__box { aspect-ratio: 1 / 2.91650; }
+    .gmu-frame__box { aspect-ratio: 1 / 2.91650 !important; }
   }
 
 @supports not (container-type: inline-size) {
     @media (max-width: 430px) {
-      .gmu-frame__box { aspect-ratio: 1 / 3.85400; }
+      .gmu-frame__box { aspect-ratio: 1 / 3.85400 !important; }
     }
     @media (min-width: 431px) and (max-width: 780px) {
-      .gmu-frame__box { aspect-ratio: 1 / 2.91650; }
+      .gmu-frame__box { aspect-ratio: 1 / 2.91650 !important; }
     }
 }
 </style>
 
-<div class="gmu-frame">
-  <div class="gmu-frame__box">
+<div class="gmu-frame" style="max-width:1200px;margin:0 auto;container-type:inline-size;">
+  <div class="gmu-frame__box" style="width:100%;aspect-ratio:1/3.85400;">
     <iframe src="https://mygmu.github.io/MOODLE-MENU/embed.html"
             title="Gulf Medical University - college menu"
             loading="lazy"
-            scrolling="no"></iframe>
+            scrolling="no"
+            style="width:100%;height:100%;border:0;display:block;"></iframe>
   </div>
 </div>

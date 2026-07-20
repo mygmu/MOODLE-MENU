@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GMU LMS - College Menu</title>
+<script src="assets/particles.js" defer></script>
 <style>
 body { margin:0; font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
         background:#f4f5f7; color:#1c2230; }
@@ -154,6 +155,44 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
   pointer-events: none;
   opacity: .22;
   z-index: 1;
+}
+
+/* =========================================================
+   NODE NETWORK
+   Sparse linked nodes drawn to a canvas by assets/particles.js, one
+   per tile, nudged aside by the cursor. This replaced three layers of
+   CSS dot-fields: those were a drifting dust cloud that could not react
+   to the pointer, and were too busy.
+
+   The container is zero-size and the canvas inside it is absolutely
+   positioned, so nothing here participates in layout - the iframe
+   height stays a fixed ratio of its width.
+
+   pointer-events:none matters: each tile is a link, and the canvas
+   covers it completely. The script tracks the pointer on window.
+
+   Without JavaScript this stays empty and the card keeps its
+   gradient, mesh, arc, icon and photo.
+   ========================================================= */
+.gmu-tile__particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.gmu-tile__particles canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: .85;
+  transition: opacity .35s ease;
+}
+
+@media (hover: hover) {
+  .gmu-tile:hover .gmu-tile__particles canvas { opacity: 1; }
 }
 
 /* ---------------- content ---------------- */
@@ -314,6 +353,8 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
   .gmu-tile { transform: none !important; }
   .gmu-tile__photo { transform: translateY(-50%) !important; }
   .gmu-tile::after { display: none; }
+  /* particles.js also checks prefers-reduced-motion and draws a
+     single static frame instead of animating. */
 }
 </style>
 </head>
@@ -333,6 +374,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/01-college-of-medicine.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -347,6 +389,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/02-college-of-pharmacy.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -361,6 +404,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/03-college-of-dentistry.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -375,6 +419,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/04-college-of-health-sciences.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -389,6 +434,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/05-management-and-ai.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -403,6 +449,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/06-college-of-nursing.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -417,6 +464,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/07-veterinary-medicine.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -431,6 +479,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/08-general-education-department.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -445,6 +494,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     <span class="gmu-tile__mesh"></span>
     <span class="gmu-tile__building"></span>
     <span class="gmu-tile__arc"></span>
+    <span class="gmu-tile__particles"></span>
     <img class="gmu-tile__icon" src="assets/icons/09-foundation-foreign-language.png" alt="">
     <span class="gmu-tile__body">
       <img class="gmu-tile__shield" src="assets/shield.png" alt="">
@@ -613,6 +663,44 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
   z-index: 1;
 }
 
+/* =========================================================
+   NODE NETWORK
+   Sparse linked nodes drawn to a canvas by assets/particles.js, one
+   per tile, nudged aside by the cursor. This replaced three layers of
+   CSS dot-fields: those were a drifting dust cloud that could not react
+   to the pointer, and were too busy.
+
+   The container is zero-size and the canvas inside it is absolutely
+   positioned, so nothing here participates in layout - the iframe
+   height stays a fixed ratio of its width.
+
+   pointer-events:none matters: each tile is a link, and the canvas
+   covers it completely. The script tracks the pointer on window.
+
+   Without JavaScript this stays empty and the card keeps its
+   gradient, mesh, arc, icon and photo.
+   ========================================================= */
+.gmu-tile__particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.gmu-tile__particles canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: .85;
+  transition: opacity .35s ease;
+}
+
+@media (hover: hover) {
+  .gmu-tile:hover .gmu-tile__particles canvas { opacity: 1; }
+}
+
 /* ---------------- content ---------------- */
 .gmu-tile__body {
   position: absolute;
@@ -771,6 +859,8 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
   .gmu-tile { transform: none !important; }
   .gmu-tile__photo { transform: translateY(-50%) !important; }
   .gmu-tile::after { display: none; }
+  /* particles.js also checks prefers-reduced-motion and draws a
+     single static frame instead of animating. */
 }
 &lt;/style&gt;
 
@@ -782,6 +872,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     &lt;span class=&quot;gmu-tile__mesh&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__building&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__arc&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;gmu-tile__particles&quot;&gt;&lt;/span&gt;
     &lt;img class=&quot;gmu-tile__icon&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/icons/01-college-of-medicine.png&quot; alt=&quot;&quot;&gt;
     &lt;span class=&quot;gmu-tile__body&quot;&gt;
       &lt;img class=&quot;gmu-tile__shield&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/shield.png&quot; alt=&quot;&quot;&gt;
@@ -796,6 +887,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     &lt;span class=&quot;gmu-tile__mesh&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__building&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__arc&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;gmu-tile__particles&quot;&gt;&lt;/span&gt;
     &lt;img class=&quot;gmu-tile__icon&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/icons/02-college-of-pharmacy.png&quot; alt=&quot;&quot;&gt;
     &lt;span class=&quot;gmu-tile__body&quot;&gt;
       &lt;img class=&quot;gmu-tile__shield&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/shield.png&quot; alt=&quot;&quot;&gt;
@@ -810,6 +902,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     &lt;span class=&quot;gmu-tile__mesh&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__building&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__arc&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;gmu-tile__particles&quot;&gt;&lt;/span&gt;
     &lt;img class=&quot;gmu-tile__icon&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/icons/03-college-of-dentistry.png&quot; alt=&quot;&quot;&gt;
     &lt;span class=&quot;gmu-tile__body&quot;&gt;
       &lt;img class=&quot;gmu-tile__shield&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/shield.png&quot; alt=&quot;&quot;&gt;
@@ -824,6 +917,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     &lt;span class=&quot;gmu-tile__mesh&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__building&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__arc&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;gmu-tile__particles&quot;&gt;&lt;/span&gt;
     &lt;img class=&quot;gmu-tile__icon&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/icons/04-college-of-health-sciences.png&quot; alt=&quot;&quot;&gt;
     &lt;span class=&quot;gmu-tile__body&quot;&gt;
       &lt;img class=&quot;gmu-tile__shield&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/shield.png&quot; alt=&quot;&quot;&gt;
@@ -838,6 +932,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     &lt;span class=&quot;gmu-tile__mesh&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__building&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__arc&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;gmu-tile__particles&quot;&gt;&lt;/span&gt;
     &lt;img class=&quot;gmu-tile__icon&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/icons/05-management-and-ai.png&quot; alt=&quot;&quot;&gt;
     &lt;span class=&quot;gmu-tile__body&quot;&gt;
       &lt;img class=&quot;gmu-tile__shield&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/shield.png&quot; alt=&quot;&quot;&gt;
@@ -852,6 +947,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     &lt;span class=&quot;gmu-tile__mesh&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__building&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__arc&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;gmu-tile__particles&quot;&gt;&lt;/span&gt;
     &lt;img class=&quot;gmu-tile__icon&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/icons/06-college-of-nursing.png&quot; alt=&quot;&quot;&gt;
     &lt;span class=&quot;gmu-tile__body&quot;&gt;
       &lt;img class=&quot;gmu-tile__shield&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/shield.png&quot; alt=&quot;&quot;&gt;
@@ -866,6 +962,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     &lt;span class=&quot;gmu-tile__mesh&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__building&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__arc&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;gmu-tile__particles&quot;&gt;&lt;/span&gt;
     &lt;img class=&quot;gmu-tile__icon&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/icons/07-veterinary-medicine.png&quot; alt=&quot;&quot;&gt;
     &lt;span class=&quot;gmu-tile__body&quot;&gt;
       &lt;img class=&quot;gmu-tile__shield&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/shield.png&quot; alt=&quot;&quot;&gt;
@@ -880,6 +977,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     &lt;span class=&quot;gmu-tile__mesh&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__building&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__arc&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;gmu-tile__particles&quot;&gt;&lt;/span&gt;
     &lt;img class=&quot;gmu-tile__icon&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/icons/08-general-education-department.png&quot; alt=&quot;&quot;&gt;
     &lt;span class=&quot;gmu-tile__body&quot;&gt;
       &lt;img class=&quot;gmu-tile__shield&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/shield.png&quot; alt=&quot;&quot;&gt;
@@ -894,6 +992,7 @@ code.inline { background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size:
     &lt;span class=&quot;gmu-tile__mesh&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__building&quot;&gt;&lt;/span&gt;
     &lt;span class=&quot;gmu-tile__arc&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;gmu-tile__particles&quot;&gt;&lt;/span&gt;
     &lt;img class=&quot;gmu-tile__icon&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/icons/09-foundation-foreign-language.png&quot; alt=&quot;&quot;&gt;
     &lt;span class=&quot;gmu-tile__body&quot;&gt;
       &lt;img class=&quot;gmu-tile__shield&quot; src=&quot;https://mygmu.github.io/MOODLE-MENU/assets/shield.png&quot; alt=&quot;&quot;&gt;
