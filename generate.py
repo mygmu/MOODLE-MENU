@@ -4,42 +4,86 @@ Regenerates every output file from ONE list of colleges.
     python generate.py
 
 Outputs
-  index.html                 showcase page for GitHub Pages (the live site)
-  moodle-paste-snippet.html  the block to paste into Moodle (absolute URLs)
+  index.html                  showcase page for GitHub Pages (the live site)
+  moodle-paste-snippet.html   direct block to paste into Moodle (absolute URLs)
+  embed.html                  bare menu, for framing
+  moodle-iframe-snippet.html  auto-fitting iframe to paste into Moodle
 
 Edit COLLEGES below, run this, commit, push. Pages redeploys automatically.
 """
 
 import html
+import re
 
 SITE = "https://mygmu.github.io/MOODLE-MENU"
 BASE = "https://lms.gmu.ac.ae/moodle/course/index.php?categoryid="
 
-# (banner filename in banners/, category id, alt text)
-COLLEGES = [
-    ("01-college-of-medicine.png",          2,    "College of Medicine"),
-    ("02-college-of-pharmacy.png",          4,    "College of Pharmacy"),
-    ("03-college-of-dentistry.png",         3,    "College of Dentistry"),
-    ("04-college-of-health-sciences.png",   5,    "College of Health Sciences"),
-    ("05-management-and-ai.jpg",            6,    "Thumbay College of Management and AI in Healthcare"),
-    ("06-college-of-nursing.png",           541,  "College of Nursing"),
-    ("07-veterinary-medicine.png",          2712, "Thumbay College of Veterinary Medicine"),
-    ("08-general-education-department.png", 513,  "General Education Department"),
-    ("09-foundation-foreign-language.jpg",  2200, "Center for Foundation &amp; Foreign Language Programs"),
+# --- auto-fitting iframe geometry -------------------------------------------
+# Moodle's HTML purifier strips <script>, so the usual postMessage
+# auto-resize cannot be used. Instead the embedded page is built so its
+# height is EXACTLY proportional to its width, which makes one CSS
+# aspect-ratio on the iframe pixel-accurate at every size, with no JS.
+#
+# For that to hold, every vertical dimension must be width-relative:
+# percentage margins resolve against the container WIDTH, so the gap is
+# expressed in %, and the page carries no fixed padding.
+#
+#   height = N * (width / tile_aspect) + (N-1) * gap% * width
+#   so     height/width  is a constant per breakpoint band.
+#
+# Bands must match the crop ratios in gmu-menu.css. See the measured
+# 58.6% title-width note there before changing any aspect.
+# Parsed from gmu-menu.css so the gap has exactly one definition. If the two
+# ever disagree the iframe height desyncs from the content it frames.
+GAP_PCT = float(re.search(r"\.gmu-tile \{.*?margin: 0 0 ([\d.]+)%",
+                          open("gmu-menu.css", encoding="utf-8").read(), re.S).group(1))
+BANDS = [                           # (max_width_px or None, tile aspect)
+    (430,  12 / 5),                 # small phone
+    (780,  16 / 5),                 # large phone / small tablet
+    (None, 4 / 1),                  # tablet and desktop
 ]
+
+# (asset stem, category id, display name)
+# Colours come from assets/colors.json, sampled from the original artwork.
+COLLEGES = [
+    ("01-college-of-medicine",          2,    "College of Medicine"),
+    ("02-college-of-pharmacy",          4,    "College of Pharmacy"),
+    ("03-college-of-dentistry",         3,    "College of Dentistry"),
+    ("04-college-of-health-sciences",   5,    "College of Health Sciences"),
+    ("05-management-and-ai",            6,    "Thumbay College of Management and AI in Healthcare"),
+    ("06-college-of-nursing",           541,  "College of Nursing"),
+    ("07-veterinary-medicine",          2712, "Thumbay College of Veterinary Medicine"),
+    ("08-general-education-department", 513,  "General Education Department"),
+    ("09-foundation-foreign-language",  2200, "Center for Foundation & Foreign Language Programs"),
+]
+
+import json
+COLORS = json.load(open("assets/colors.json"))
 
 css = open("gmu-menu.css", encoding="utf-8").read()
 
 
 def tiles(prefix):
-    return "\n\n".join(
-        f'''  <a class="gmu-menu__item" href="{BASE}{cid}"
-     style="display:block;line-height:0;margin:0 0 14px;border-radius:10px;overflow:hidden;">
-    <img class="gmu-menu__img" src="{prefix}{fn}" alt="{alt}"
-         width="1584" height="396" style="display:block;width:100%;height:auto;border:0;">
-  </a>'''
-        for fn, cid, alt in COLLEGES
-    )
+    """prefix is the SITE ROOT ("" locally, the Pages URL for Moodle),
+    not a folder - asset paths below already include assets/."""
+    out = []
+    for stem, cid, name in COLLEGES:
+        c = COLORS[stem]
+        out.append(
+            f'''  <a class="gmu-tile" href="{BASE}{cid}"
+     style="--from:{c['from']};--to:{c['to']}">
+    <span class="gmu-tile__bg"></span>
+    <span class="gmu-tile__mesh"></span>
+    <span class="gmu-tile__building"></span>
+    <span class="gmu-tile__arc"></span>
+    <img class="gmu-tile__icon" src="{prefix}assets/icons/{stem}.png" alt="">
+    <span class="gmu-tile__body">
+      <img class="gmu-tile__shield" src="{prefix}assets/shield.png" alt="">
+      <span class="gmu-tile__name">{html.escape(name)}</span>
+    </span>
+    <img class="gmu-tile__photo" src="{prefix}assets/photos/{stem}.png" alt="">
+  </a>''')
+    return "\n\n".join(out)
 
 
 def block(prefix):
@@ -62,13 +106,175 @@ SNIPPET_HEAD = f"""<!-- ========================================================
      purge caches, and delete the <style> block below. The menu still
      lays out correctly without it - only the motion is lost.
 
-     Artwork source: {SITE}/banners/
+     Artwork source: {SITE}/assets/
      ========================================================= -->
 
 """
 
-snippet = SNIPPET_HEAD + "<style>\n" + css + "</style>\n\n" + block(f"{SITE}/banners/")
+# CSS url() resolves against the PAGE, not against wherever the stylesheet text
+# came from. Pasted into Moodle these would resolve against lms.gmu.ac.ae and
+# 404, so the decorative layers are absolutised for this snippet only.
+# embed.html and index.html are served from the site root, where relative is correct.
+css_abs = css.replace('url("assets/', f'url("{SITE}/assets/')
+snippet = SNIPPET_HEAD + "<style>\n" + css_abs + "</style>\n\n" + block(f"{SITE}/")
 open("moodle-paste-snippet.html", "w", encoding="utf-8").write(snippet)
+
+# ------------------------------------------------------- embed page + iframe
+N = len(COLLEGES)
+gap = GAP_PCT / 100.0
+
+
+def height_over_width(tile_aspect):
+    """Page height as a multiple of width. Constant => aspect-ratio works."""
+    return N / tile_aspect + (N - 1) * gap
+
+
+# --- embed.html: the framed page. Every vertical size is width-relative. ---
+embed_css = f"""
+/* Overrides that make total height exactly proportional to width.
+   These deliberately beat gmu-menu.css:
+     - no page padding, no max-width  (parent iframe caps the width)
+     - gap in %, which resolves against WIDTH, not height
+     - aspect ratios keyed on WIDTH only
+
+   Why not the orientation queries in gmu-menu.css: inside an iframe the
+   "orientation" media feature compares the IFRAME's box, and this frame is
+   always far taller than it is wide, so it would report portrait on every
+   device including desktop. Width-only queries are the correct signal here. */
+html, body {{ margin:0; padding:0; background:transparent; }}
+.gmu-menu {{ max-width:none !important; padding:0 !important; margin:0 !important; }}
+/* border-radius is left alone on purpose: it does not affect layout height,
+   so it cannot disturb the proportionality the aspect-ratio depends on. */
+.gmu-tile {{ margin:0 0 {GAP_PCT}% !important; }}
+.gmu-tile:last-child {{ margin-bottom:0 !important; }}
+"""
+# Pin the tile aspect per band so height stays exactly proportional to width.
+# Bare max-width would let narrower bands also match wider ones, and the last
+# rule would win, so the bands are emitted as exclusive ranges.
+_lo = 0
+for limit, aspect in BANDS:
+    if limit:
+        q = (f"@media (max-width: {limit}px)" if _lo == 0
+             else f"@media (min-width: {_lo}px) and (max-width: {limit}px)")
+        _lo = limit + 1
+    else:
+        q = f"@media (min-width: {_lo}px)"
+    embed_css += f"""
+{q} {{
+  .gmu-tile {{ aspect-ratio: {aspect:.6f}; }}
+}}"""
+
+embed = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GMU College Menu</title>
+<base target="_top">
+<style>
+{css}{embed_css}
+</style>
+</head>
+<body>
+{block("")}</body>
+</html>
+"""
+open("embed.html", "w", encoding="utf-8").write(embed)
+
+# --- moodle-iframe-snippet.html: the auto-fitting wrapper. ---
+default_ratio = height_over_width(BANDS[-1][1])
+rows = "\n".join(
+    f"     {('<=' + str(l) + 'px').rjust(8)}   tile {a:.3f}:1   ->  frame 1 : {height_over_width(a):.5f}"
+    for l, a in BANDS[:-1]
+) + f"\n      >=781px   tile {BANDS[-1][1]:.3f}:1   ->  frame 1 : {default_ratio:.5f}"
+
+# Non-overlapping ranges, NOT bare max-widths. With plain max-width queries
+# every narrower band also matches the wider ones, and the last rule in source
+# order wins - so a 375px phone would silently take the 780px ratio and the
+# frame would come up short. Explicit lower bounds make the bands exclusive
+# and the result order-independent.
+def _bounds():
+    lo = 0
+    for limit, aspect in BANDS[:-1]:
+        cond = f"(max-width: {limit}px)" if lo == 0 else \
+               f"(min-width: {lo}px) and (max-width: {limit}px)"
+        yield cond, height_over_width(aspect)
+        lo = limit + 1
+
+
+cq = "\n".join(
+    f"""  @container {cond} {{
+    .gmu-frame__box {{ aspect-ratio: 1 / {r:.5f}; }}
+  }}"""
+    for cond, r in _bounds()
+)
+fb = "\n".join(
+    f"""    @media {cond} {{
+      .gmu-frame__box {{ aspect-ratio: 1 / {r:.5f}; }}
+    }}"""
+    for cond, r in _bounds()
+)
+
+iframe_snippet = f"""<!-- =========================================================
+     GMU LMS - College menu, auto-fitting iframe
+     Generated by generate.py - do not hand-edit.
+
+     Paste into the label or page in HTML view ( < > ).
+
+     HOW THE AUTO-FIT WORKS, WITH NO JAVASCRIPT
+     Moodle's purifier strips <script>, so the usual postMessage
+     resize handshake is not available. Instead {SITE}/embed.html
+     is built so its height is exactly proportional to its width
+     (gaps in %, no fixed padding). That makes the frame's correct
+     shape a constant, so a single CSS aspect-ratio fits it exactly:
+
+{rows}
+
+     The wrapper is a CSS CONTAINER, so those breakpoints measure the
+     IFRAME's own width. Plain media queries would measure the browser
+     viewport, which is wider than the iframe by Moodle's page padding,
+     so a phone near a breakpoint would pick the wrong height and leave
+     a gap or clip a tile. The @supports fallback below only runs on
+     browsers too old for container queries.
+
+     If you change GAP_PCT or the crop ratios, re-run generate.py -
+     these numbers are derived, not typed.
+     ========================================================= -->
+
+<style>
+.gmu-frame {{
+  container-type: inline-size;
+  max-width: 1200px;                /* must match the menu's own cap */
+  margin: 0 auto;
+}}
+.gmu-frame__box {{
+  aspect-ratio: 1 / {default_ratio:.5f};
+  width: 100%;
+}}
+.gmu-frame__box iframe {{
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}}
+
+{cq}
+
+@supports not (container-type: inline-size) {{
+{fb}
+}}
+</style>
+
+<div class="gmu-frame">
+  <div class="gmu-frame__box">
+    <iframe src="{SITE}/embed.html"
+            title="Gulf Medical University - college menu"
+            loading="lazy"
+            scrolling="no"></iframe>
+  </div>
+</div>
+"""
+open("moodle-iframe-snippet.html", "w", encoding="utf-8").write(iframe_snippet)
 
 # ---------------------------------------------------------------- showcase page
 page = f"""<!DOCTYPE html>
@@ -107,7 +313,7 @@ code.inline {{ background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size
      narrow the window to see the phone layout.</p>
 
   <h2>Live menu</h2>
-{block("banners/")}
+{block("")}
   <h2>Copy-paste block for Moodle</h2>
   <div class="note">
     Paste into the label or page using <strong>HTML view (&lt; &gt;)</strong>.
@@ -125,4 +331,4 @@ code.inline {{ background:#e9ecf1; padding:2px 6px; border-radius:4px; font-size
 """
 open("index.html", "w", encoding="utf-8").write(page)
 
-print(f"wrote index.html and moodle-paste-snippet.html ({len(COLLEGES)} tiles)")
+print(f"wrote index.html, moodle-paste-snippet.html, embed.html, moodle-iframe-snippet.html ({len(COLLEGES)} tiles)")

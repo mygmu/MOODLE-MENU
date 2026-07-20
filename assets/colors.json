@@ -1,0 +1,38 @@
+{
+ "01-college-of-medicine": {
+  "from": "#299050",
+  "to": "#235233"
+ },
+ "02-college-of-pharmacy": {
+  "from": "#08462a",
+  "to": "#132e21"
+ },
+ "03-college-of-dentistry": {
+  "from": "#d7569b",
+  "to": "#773657"
+ },
+ "04-college-of-health-sciences": {
+  "from": "#509935",
+  "to": "#365626"
+ },
+ "05-management-and-ai": {
+  "from": "#2f556b",
+  "to": "#42505b"
+ },
+ "06-college-of-nursing": {
+  "from": "#186694",
+  "to": "#298fcb"
+ },
+ "07-veterinary-medicine": {
+  "from": "#69238e",
+  "to": "#402051"
+ },
+ "08-general-education-department": {
+  "from": "#87191d",
+  "to": "#50181a"
+ },
+ "09-foundation-foreign-language": {
+  "from": "#10869b",
+  "to": "#406d75"
+ }
+}
