@@ -1,41 +1,5 @@
-<!-- =========================================================
-     GMU LMS - Responsive animated college menu
-
-     STEP 1 - upload the artwork
-       In the label/page editor, drag all 9 files from the "banners"
-       folder into the editor body. Moodle stores them in THIS
-       activity's file area. Then delete the 9 images it inserted -
-       the FILES stay uploaded, the markup goes.
-
-     STEP 2 - paste this block in HTML view ( < > )
-
-     STEP 3 - the <style> block below
-       Moodle's HTML purifier strips <style> from most editors. If the
-       animation does not work after saving, the CSS was stripped:
-       paste gmu-menu.css into
-         Site administration > Appearance > Themes > Boost > Raw initial SCSS
-       and purge caches. Then delete the <style> block here.
-
-     The inline width/height styles are deliberate: without any CSS at
-     all the menu still lays out correctly, it just stops animating.
-
-     Do not hand-edit the links here - edit generate.py and re-run it,
-     so this file and preview.html stay in agreement.
-     ========================================================= -->
 
 <style>
-/* =========================================================
-   GMU LMS - College menu: motion, hover highlight, orientation
-   Prefix "gmu-" throughout so nothing collides with Boost.
-
-   WHERE THIS GOES:
-   Site administration > Appearance > Themes > Boost > Raw initial SCSS
-   (or Custom CSS), then Purge caches.
-
-   The HTML also carries inline width/height styles, so if this
-   stylesheet is ever missing the menu still lays out correctly -
-   it just loses the animation and the mobile crop.
-   ========================================================= */
 
 .gmu-menu {
   max-width: 1200px;
